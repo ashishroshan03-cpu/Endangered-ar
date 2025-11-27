@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Endangered AR</title>
+  <title>Simple Multi-Target AR</title>
+
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
@@ -33,9 +34,11 @@
     <a-entity mindar-image-target="targetIndex:0">
       <a-gltf-model rotation="-90 0 0" scale="0.5 0.5 0.5" src="#model1" animation-mixer></a-gltf-model>
     </a-entity>
+
     <a-entity mindar-image-target="targetIndex:1">
       <a-gltf-model rotation="-90 0 0" scale="0.5 0.5 0.5" src="#model2" animation-mixer></a-gltf-model>
     </a-entity>
+
     <a-entity mindar-image-target="targetIndex:2">
       <a-gltf-model rotation="-90 0 0" scale="0.5 0.5 0.5" src="#model3" animation-mixer></a-gltf-model>
     </a-entity>
@@ -47,8 +50,7 @@
     document.getElementById('startBtn').addEventListener('click', () => {
       document.getElementById('startBtn').style.display = 'none';
       document.getElementById('info').textContent = 'Starting camera…';
-      // MindAR automatically starts the camera when the scene is visible
-      // No manual .start() needed → removes all "undefined" errors
+      // MindAR automatically starts the camera when the scene is made visible.
     });
   </script>
 </body>
