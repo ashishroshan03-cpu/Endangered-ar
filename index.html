@@ -26,7 +26,7 @@
   <a-scene 
     id="scene"
     embedded 
-    mindar-image="imageTargetSrc: targets.mind; uiLoading:no; uiScanning:no; uiError:no; showStats:true"
+    mindar-image="imageTargetSrc: targets.mind; uiLoading:no; uiScanning:no; uiError:no; showStats:true;"
     color-space="sRGB"
     renderer="colorManagement:true"
     vr-mode-ui="enabled:false"
@@ -55,41 +55,42 @@
   </a-scene>
 
   <script>
-    const startBtn = document.getElementById('start');
-    const msg = document.getElementById('msg');
-    const err = document.getElementById('err');
-    const sceneEl = document.getElementById('scene');
+    AFRAME.registerComponent('ar-start', {
+      init: function () {
+        this.startAR = this.startAR.bind(this);
+      },
+      startAR: async function () {
+        const msg = document.getElementById('msg');
+        const err = document.getElementById('err');
+        const startBtn = document.getElementById('start');
+        const sceneEl = this.el;
 
-    startBtn.onclick = async () => {
-      startBtn.style.display = 'none';
-      msg.textContent = 'Loading AR...';
+        startBtn.style.display = 'none';
+        msg.textContent = 'Loading AR...';
 
-      sceneEl.addEventListener('loaded', async () => {
         try {
-          // Wait a tick for MindAR system to fully register
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          if (!sceneEl.systems['mindar-image-system']) {
-            throw new Error('MindAR system not ready - retry in 1s');
-          }
-          
-          await sceneEl.systems['mindar-image-system'].start();
-          msg.textContent = '✅ Camera on! Point at any marker (green stats = tracking active)';
-          console.log('AR started successfully');
+          // Official MindAR wait + start (fixes timing)
+          await new Promise(resolve => setTimeout(resolve, 500)); // Extra buffer for system reg
+          const mindar = sceneEl.systems['mindar-image-system'];
+          if (!mindar) throw new Error('MindAR not ready');
+          await mindar.start();
+          msg.textContent = '✅ Camera on! Point at any marker (green stats = tracking)';
+          console.log('AR started');
         } catch (e) {
-          console.error('Start error:', e);
-          err.textContent = 'Failed to start: ' + e.message + '. (Tap button to retry)';
+          console.error('AR error:', e);
+          err.textContent = 'Start failed: ' + e.message + '. Retry button.';
           err.style.display = 'block';
           startBtn.style.display = 'block';
           msg.textContent = 'Tap to retry';
         }
-      }, { once: true });
-
-      // Kick off load if not already
-      if (sceneEl.hasLoaded) {
-        sceneEl.emit('loaded');
       }
-    };
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const sceneEl = document.querySelector('a-scene');
+      sceneEl.setAttribute('ar-start', '');
+      document.getElementById('start').onclick = () => sceneEl.components['ar-start'].startAR();
+    });
   </script>
 </body>
 </html>
